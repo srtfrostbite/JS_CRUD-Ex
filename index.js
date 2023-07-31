@@ -123,3 +123,9 @@ function createTaskHandler() {
 }
 
 createTaskButton.addEventListener('click', createTaskHandler)
+createTaskInput.addEventListener('keypress', function(event) {
+    if (event.key ==='Enter') {
+        event.preventDefault()
+        createTaskButton.click()
+    }
+})
