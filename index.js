@@ -69,43 +69,81 @@ function taskFactory(text = '', status = TASK_STATUS.todo) {
 //     return li
 // }
 
-function renderTask(taskObject) {
+// function renderTask(taskObject) {
+//     if (!taskObject || typeof taskObject !== 'object') {
+//         return
+//     }
+
+//     let todoListStateClass = ''
+//     if (taskObject.status === TASK_STATUS.todo) {
+//         todoListStateClass = 'bg-gray-100'
+//     } else if (taskObject.status === TASK_STATUS.done) {
+//         todoListStateClass = 'bg-green-100'
+//     }
+//     return `<li class="rounded-xl p-2 mt-1 flex justify-between ${todoListStateClass}">
+//                 <p class = ${taskObject.status === TASK_STATUS.done ? 'line-through': ''}>${taskObject.text}</p>
+//                 <div>
+//                     <span class="fa fa-minus-circle text-red-500"></span>
+//                     <span class="fa fa-check-circle text-green-500"></span>
+//                 </div>
+//             </li>`
+// }
+
+function renderTaskTemplate(taskObject) {
     if (!taskObject || typeof taskObject !== 'object') {
         return
     }
 
+    const template = document.querySelector('template')
+    const clone = template.content.cloneNode(true)
+
+    const p = clone.querySelector('p')
+    p.innerHTML = taskObject.text
+    
+    const li = clone.querySelector('li')
+
     let todoListStateClass = ''
     if (taskObject.status === TASK_STATUS.todo) {
-        todoListStateClass = 'bg-gray-100'
+        li.classList.add('bg-gray-100')
     } else if (taskObject.status === TASK_STATUS.done) {
-        todoListStateClass = 'bg-green-100'
+        li.classList.add('bg-green-100')
+        p.classList.add('line-through')
     }
-    return `<li class="rounded-xl p-2 mt-1 flex justify-between ${todoListStateClass}">
-                <p class = ${taskObject.status === TASK_STATUS.done ? 'line-through': ''}>${taskObject.text}</p>
-                <div>
-                    <span class="fa fa-minus-circle text-red-500"></span>
-                    <span class="fa fa-check-circle text-green-500"></span>
-                </div>
-            </li>`
+
+    return clone
 }
 
-function renderTasks() {
+
+// function renderTasks() {
+//     const todoListElement = document.querySelector('#todo-list')
+//     let renederdTasks = []
+//     // todoListElement.innerHTML = ''
+//     for (let i = 0; i < taskList.length; i += 1) {
+//         // let renderedTask = renderTask(taskList[i])
+//         // todoListElement.appendChild(renderedTask)
+//         renederdTasks.push(renderTask(taskList[i]))
+//     }
+//     todoListElement.innerHTML = renederdTasks.join('\n')
+// }
+
+
+function renderTasksTemplate() {
     const todoListElement = document.querySelector('#todo-list')
-    let renederdTasks = []
-    // todoListElement.innerHTML = ''
+    todoListElement.innerHTML = ''
     for (let i = 0; i < taskList.length; i += 1) {
-        // let renderedTask = renderTask(taskList[i])
-        // todoListElement.appendChild(renderedTask)
-        renederdTasks.push(renderTask(taskList[i]))
+        let renderedTask = renderTaskTemplate(taskList[i])
+        todoListElement.appendChild(renderedTask)
+        // renederdTasks.push(renderTask(taskList[i]))
     }
-    todoListElement.innerHTML = renederdTasks.join('\n')
+    // todoListElement.innerHTML = renederdTasks.join('\n')
 }
 
 
 function createTask(text = '') {
     const task = taskFactory(text)
     taskList.push(task)
-    renderTasks()
+    // renderTasks()
+    renderTasksTemplate()
 }
 
 const createTaskForm = document.querySelector('#create-todo')
