@@ -1,5 +1,5 @@
 let taskIDCounter = 0
-const taskList = []
+let taskList = []
 
 const TASK_STATUS = Object.freeze({
     todo: 'todo',
@@ -69,81 +69,102 @@ function taskFactory(text = '', status = TASK_STATUS.todo) {
 //     return li
 // }
 
-// function renderTask(taskObject) {
-//     if (!taskObject || typeof taskObject !== 'object') {
-//         return
-//     }
-
-//     let todoListStateClass = ''
-//     if (taskObject.status === TASK_STATUS.todo) {
-//         todoListStateClass = 'bg-gray-100'
-//     } else if (taskObject.status === TASK_STATUS.done) {
-//         todoListStateClass = 'bg-green-100'
-//     }
-//     return `<li class="rounded-xl p-2 mt-1 flex justify-between ${todoListStateClass}">
-//                 <p class = ${taskObject.status === TASK_STATUS.done ? 'line-through': ''}>${taskObject.text}</p>
-//                 <div>
-//                     <span class="fa fa-minus-circle text-red-500"></span>
-//                     <span class="fa fa-check-circle text-green-500"></span>
-//                 </div>
-//             </li>`
-// }
-
-function renderTaskTemplate(taskObject) {
+function renderTask(taskObject) {
     if (!taskObject || typeof taskObject !== 'object') {
         return
     }
 
-    const template = document.querySelector('template')
-    const clone = template.content.cloneNode(true)
-
-    const p = clone.querySelector('p')
-    p.innerHTML = taskObject.text
-    
-    const li = clone.querySelector('li')
-
     let todoListStateClass = ''
     if (taskObject.status === TASK_STATUS.todo) {
-        li.classList.add('bg-gray-100')
+        todoListStateClass = 'bg-gray-100'
     } else if (taskObject.status === TASK_STATUS.done) {
-        li.classList.add('bg-green-100')
-        p.classList.add('line-through')
+        todoListStateClass = 'bg-green-100'
     }
-
-    return clone
+    return `<li class="rounded-xl p-2 mt-1 flex justify-between ${todoListStateClass}">
+                <p class = ${taskObject.status === TASK_STATUS.done ? 'line-through': ''}>${taskObject.text}</p>
+                <div>
+                    <!-- <span class="fa fa-minus-circle text-red-500" data-action="delete" data-target="${taskObject.id}"></span> -->
+                    <span class="fa fa-minus-circle text-red-500" onclick="deleteHandler('${taskObject.id}')"></span>
+                    <span class="fa fa-check-circle text-green-500"></span>
+                </div>
+            </li>`
 }
 
-
-// function renderTasks() {
-//     const todoListElement = document.querySelector('#todo-list')
-//     let renederdTasks = []
-//     // todoListElement.innerHTML = ''
-//     for (let i = 0; i < taskList.length; i += 1) {
-//         // let renderedTask = renderTask(taskList[i])
-//         // todoListElement.appendChild(renderedTask)
-//         renederdTasks.push(renderTask(taskList[i]))
+// function renderTaskTemplate(taskObject) {
+//     if (!taskObject || typeof taskObject !== 'object') {
+//         return
 //     }
-//     todoListElement.innerHTML = renederdTasks.join('\n')
+
+//     const template = document.querySelector('template')
+//     const clone = template.content.cloneNode(true)
+
+//     const p = clone.querySelector('p')
+//     p.innerHTML = taskObject.text
+    
+//     const li = clone.querySelector('li')
+
+//     let todoListStateClass = ''
+//     if (taskObject.status === TASK_STATUS.todo) {
+//         li.classList.add('bg-gray-100')
+//     } else if (taskObject.status === TASK_STATUS.done) {
+//         li.classList.add('bg-green-100')
+//         p.classList.add('line-through')
+//     }
+
+//     return clone
 // }
 
 
-function renderTasksTemplate() {
+function renderTasks() {
     const todoListElement = document.querySelector('#todo-list')
-    todoListElement.innerHTML = ''
+    let renederdTasks = []
+    // todoListElement.innerHTML = ''
     for (let i = 0; i < taskList.length; i += 1) {
-        let renderedTask = renderTaskTemplate(taskList[i])
-        todoListElement.appendChild(renderedTask)
-        // renederdTasks.push(renderTask(taskList[i]))
+        // let renderedTask = renderTask(taskList[i])
+        // todoListElement.appendChild(renderedTask)
+        renederdTasks.push(renderTask(taskList[i]))
     }
-    // todoListElement.innerHTML = renederdTasks.join('\n')
+    todoListElement.innerHTML = renederdTasks.join('\n')
 }
+
+
+// function renderTasksTemplate() {
+//     const todoListElement = document.querySelector('#todo-list')
+//     todoListElement.innerHTML = ''
+//     for (let i = 0; i < taskList.length; i += 1) {
+//         let renderedTask = renderTaskTemplate(taskList[i])
+//         todoListElement.appendChild(renderedTask)
+//         // renederdTasks.push(renderTask(taskList[i]))
+//     }
+//     // todoListElement.innerHTML = renederdTasks.join('\n')
+// }
 
 
 function createTask(text = '') {
     const task = taskFactory(text)
     taskList.push(task)
-    // renderTasks()
-    renderTasksTemplate()
+    renderTasks()
+    // renderTasksTemplate()
+}
+
+function deleteTask(taskID) {
+    if (typeof taskID !== 'string' || !taskID ) {
+        return
+    }
+    let newTaskList = []
+    for(let i = 0; i < taskList.length; i++) {
+        if (taskList[i].id !== taskID)  {
+            newTaskList.push(taskList[i])
+        }  
+    }
+    taskList = newTaskList
+    // renderTasksTemplate()
+    renderTasks()
+
+}
+
+function deleteHandler(taskID) {
+    deleteTask(taskID)
 }
 
 const createTaskForm = document.querySelector('#create-todo')
@@ -160,10 +181,20 @@ function createTaskHandler() {
     createTaskInput.value = ''
 }
 
+
 createTaskButton.addEventListener('click', createTaskHandler)
 createTaskInput.addEventListener('keypress', function(event) {
     if (event.key ==='Enter') {
         event.preventDefault()
         createTaskButton.click()
+    }
+})
+
+const todoListElement = document.querySelector('#todo-list')
+todoListElement.addEventListener('click', function(event){
+    const targetEl = event.target
+    if (targetEl.dataset.action === 'delete') {
+        const taskID = targetEl.dataset.target
+        deleteTask(taskID)
     }
 })
