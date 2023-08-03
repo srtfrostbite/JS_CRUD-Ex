@@ -160,11 +160,41 @@ function deleteTask(taskID) {
     taskList = newTaskList
     // renderTasksTemplate()
     renderTasks()
-
 }
 
+function deleteTaskSplice(taskID) {
+    if (typeof taskID !== 'string' || !taskID ) {
+        return
+    }
+    for(let i = 0; i < taskList.length; i++) {
+        if (taskList[i].id === taskID)  {
+            taskList.splice(i, 1)
+        }  
+    }
+    // renderTasksTemplate()
+    renderTasks()
+}
+
+function deleteTaskFilter(taskID) {
+    if (typeof taskID !== 'string' || !taskID ) {
+        return
+    }
+
+    let newTaskList = taskList.filter(function(currentItem) {
+        return currentItem.id !== taskID
+    })
+
+    taskList = newTaskList
+    // renderTasksTemplate()
+    renderTasks()
+}
+
+
+
 function deleteHandler(taskID) {
-    deleteTask(taskID)
+    // deleteTask(taskID)
+    // deleteTaskSplice(taskID)
+    deleteTaskFilter(taskID)
 }
 
 const createTaskForm = document.querySelector('#create-todo')
