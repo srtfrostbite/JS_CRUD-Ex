@@ -89,8 +89,8 @@ function renderTask(taskObject) {
         todoListStateClass = 'bg-green-100'
     }
     return `<li class="rounded-xl p-2 mt-1 flex justify-between ${todoListStateClass}">
-                <p class = ${taskObject.status === TASK_STATUS.done ? 'line-through': ''}>${taskObject.text}</p>
-                <input value='${taskObject.text}' display='none'>
+                <p class = ${taskObject.status === TASK_STATUS.done ? 'line-through': ''} data-type='p' data-action="update-text" data-target="${taskObject.id}">${taskObject.text}</p>
+                <input value='${taskObject.text}' style="display: none" data-type='input' data-action="update-text" data-target="${taskObject.id}">
                 <div>
                     <span class="fa fa-minus-circle cursor-pointer text-red-500" data-action="delete" data-target="${taskObject.id}"></span>
                     <!-- <span class="fa fa-minus-circle cursor-pointer text-red-500" onclick="deleteHandler('${taskObject.id}')"></span>  -->
@@ -261,6 +261,15 @@ function updateTask(taskID, payload = {}) {
     changeTaskList(newTaskList)
 }
 
+// function getText(taskID) {
+
+// }
+
+function changeDisplay(toShow, toHide) {
+    toShow.style.display = 'block'
+    toHide.style.display = 'none'
+}
+
 
 function deleteHandler(taskID) {
     // deleteTask(taskID)
@@ -294,13 +303,46 @@ createTaskInput.addEventListener('keypress', function(event) {
 const todoListElement = document.querySelector('#todo-list')
 todoListElement.addEventListener('click', function(event){
     const targetEl = event.target
-    console.log(targetEl.dataset.action)
+    const taskID = targetEl.dataset.target
+    // console.log(targetEl.dataset.action)
     if (targetEl.dataset.action === 'delete') {
-        const taskID = targetEl.dataset.target
+        // const taskID = targetEl.dataset.target
         deleteTask(taskID)
     } else if (targetEl.dataset.action === 'update') {
-        console.log('update call')
-        const taskID = targetEl.dataset.target
+        // console.log('update call')
+        // const taskID = targetEl.dataset.target
         updateTask(taskID, {status: TASK_STATUS.done})
+    } else if (
+        targetEl.dataset.action === 'update-text' 
+        && targetEl.dataset.type !== 'input'
+        ) {
+        const taskID = targetEl.dataset.target
+        const input = todoListElement.querySelector(`[data-target=${taskID}][data-type="input"]`)
+        console.log('input element is: ', input)
+        input.style.display = 'block'
+        targetEl.style.display = 'none'
+        // changeDisplay(input, targetEl)
+    }
+})
+
+todoListElement.addEventListener('keypress', function(event) {
+    if (event.key ==='Enter') {
+        event.preventDefault()
+        const targetEl = event.target
+        console.log('target element is: ', targetEl)
+        if (
+            targetEl.dataset.action === 'update-text' 
+            // && targetEl.dataset.type !== 'p'
+            ) {
+            const taskID = targetEl.dataset.target
+            const editedText = targetEl.value
+            console.log('edited value is: ', editedText)
+            const newP = todoListElement.querySelector(`p[data-target=${taskID}]`)
+            console.log('p element is: ', newP)
+            newP.style.display = 'block'
+            targetEl.style.display = 'none'
+            updateTask(taskID, {text: editedText})
+            // changeDisplay(p, targetEl)
+        }
     }
 })

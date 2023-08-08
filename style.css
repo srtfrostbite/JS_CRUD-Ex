@@ -52,3 +52,12 @@
 .pt-1 {
     padding-top: 8px;
 } */
+
+
+p[data-action='update-text'] {
+    width: 90%;
+}
+
+input[data-action='update-text'] {
+    width: 90%;
+}
