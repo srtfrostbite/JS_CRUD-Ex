@@ -268,6 +268,7 @@ function updateTask(taskID, payload = {}) {
 function changeDisplay(toShow, toHide) {
     toShow.style.display = 'block'
     toHide.style.display = 'none'
+    console.log(toShow, toHide)
 }
 
 
@@ -339,10 +340,10 @@ todoListElement.addEventListener('keypress', function(event) {
             console.log('edited value is: ', editedText)
             const newP = todoListElement.querySelector(`p[data-target=${taskID}]`)
             console.log('p element is: ', newP)
-            newP.style.display = 'block'
-            targetEl.style.display = 'none'
+            // newP.style.display = 'block'
+            // targetEl.style.display = 'none'
             updateTask(taskID, {text: editedText})
-            // changeDisplay(p, targetEl)
+            changeDisplay(newP, targetEl)
         }
     }
 })
